@@ -4,15 +4,15 @@ import module namespace functx = 'http://www.functx.com';
 
 (: 
 state before: vot-2016-07-01-19-29-22
-state after: vot-2016-07-01-19-32-05
+state after: vot-2016-07-01-19-32-05, vot-2016-07-12-14-20-20
 execution time: 74067ms
 :)
 
 
 for $rida in db:open('vot')//*:body/*:div/*:p
   return
-    (:replace node $rida 
-    with:) copy $uusrida := $rida
+    replace node $rida 
+    with copy $uusrida := $rida
         modify (
           let $ms_viimane_element := ($uusrida//*:span[contains(./@class, "ms1")])[last()]
           return 
