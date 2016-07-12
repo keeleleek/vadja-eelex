@@ -8,16 +8,8 @@ state after: vot-2016-07-01-19-32-05
 execution time: 74067ms
 :)
 
-let $dictfiles := (
-  'a-h.html',
-  'i-l.html',
-  'm-r.html',
-  's-y.html'
-)
-for $file in $dictfiles
-  let $dict := db:open('vot', $file)
 
-for $rida in $dict//*:body/*:div/*:p
+for $rida in db:open('vot')//*:body/*:div/*:p
   return
     (:replace node $rida 
     with:) copy $uusrida := $rida
