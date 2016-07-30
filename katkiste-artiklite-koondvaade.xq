@@ -7,19 +7,10 @@ state after: vot-2016-07-01-19-34-02, vot-2016-07-12-14-21-04
 execution time: 2955ms
 :)
 
-let $dictfiles := (
-  'a-h.html',
-  'i-l.html',
-  'm-r.html',
-  's-y.html'
-)
-for $file in $dictfiles
-  let $dict := db:open('vot', $file)
-  for $katkinerida in $dict//*:body/*:div/*:p
-    let $õigerida := $katkinerida/preceding-sibling::vot:A[1]
-    return (
-        insert nodes $katkinerida/descendant::*
-            as last into $õigerida,
-            delete node $katkinerida
-    )
-    
+for $katkinerida in db:open('vot')//vot:A[not(exists(.//vot:m))]
+  let $õigerida := $katkinerida/preceding-sibling::vot:A[1]
+  return (
+      insert nodes $katkinerida/node()
+          as last into $õigerida,
+          delete node $katkinerida
+  )

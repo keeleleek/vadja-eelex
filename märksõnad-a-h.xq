@@ -31,7 +31,7 @@ for $rida in db:open('vot')//*:body/*:div/*:p
               then (
                 (: grupeeri ja liiguta märksõna artikli
                       algusesse :)
-                insert node <vot:m>{$kogu_ms_text}</vot:m>
+                insert node <vot:P><vot:mg><vot:m>{$kogu_ms_text}</vot:m></vot:mg></vot:P>
                   as first into $uusrida,
                 delete nodes $kogu_ms,
                 (: nime artiklielement ümber :)

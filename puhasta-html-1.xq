@@ -17,3 +17,7 @@ execution time: 187ms + 147ms + 2056ms + 2423ms
 
 (:for $div in db:open('vot')//xhtml:div
   return replace node $div with $div/vot:A:)
+
+(: delete nodes db:open('vot')//*:span[contains(@class, "ms1")] :)
+
+(: hiljem võiks ka delete nodes xhtml:* :)
