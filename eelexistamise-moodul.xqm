@@ -673,6 +673,15 @@ declare updating function keeleleek:fix-nbsp() {
 
 (:~ removes all element names and attributes that does not belong to eelex :)
 declare updating function keeleleek:export-to-eelex() {
-  for $wrong-ns in db:open('vot')//((* except vot:*)|(@* except (@vot:*|@xml:*)))
-    return delete node $wrong-ns
+  for $wrong-ns-node in db:open('vot')//((* except vot:*)|(@* except (@vot:*|@xml:*)))
+    return
+      if ($wrong-ns-node instance of element())
+      (: elemendid kustutakse ära jättes alles nende sisu :)
+      then (
+        let $parent := $wrong-ns-node/..
+        return insert nodes $wrong-ns-node/node() after $parent/$wrong-ns-node,
+        delete node $wrong-ns-node
+      )
+      (: atribuudid kustutakse ära koos nende sisuga :)
+      else (delete node $wrong-ns-node)
 };
