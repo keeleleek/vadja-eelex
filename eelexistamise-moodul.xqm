@@ -253,7 +253,7 @@ declare updating function keeleleek:mark-single-senses() {
           for $sibling in $S
             return 
               if ($sibling/node-name() = QName("http://www.eki.ee/dict/vot", "S"))
-              then "heips" (: $sibling/vot:S :)
+              then "heips" (: $sibling/vot:S :) (: @todo now this will never happen :)
               else $sibling
         }</vot:tp></vot:S>
       return
