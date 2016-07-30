@@ -455,7 +455,9 @@ declare updating function keeleleek:mark-üldviited() {
         replace node $viiteelement with <vot:yvtg>{
           for $viit in $viited
             return (
-              <vot:yvt>{replace($viit, "[.]\s*$", "")}</vot:yvt> (: kustuta viimase viite järel oleva punkti:)
+              <vot:yvt>{
+                (: kustuta veel viimase viite järel oleva punkti ära :)
+                replace($viit, "[.]\s*$", "")}</vot:yvt>
             )
           }</vot:yvtg>
       )

@@ -2,6 +2,7 @@ import module namespace keeleleek ="http://vadja.keeleleek.ee" at "eelexistamise
 
 (: eelexistab andmebaasi :)
 
+(:~ tagavara 0 :)
 (: keeleleek:fix-nbsp() :)
 (: keeleleek:mark-headwords() :)
 (: keeleleek:fix-missing-headword-articles() :)
@@ -11,6 +12,7 @@ import module namespace keeleleek ="http://vadja.keeleleek.ee" at "eelexistamise
 (: keeleleek:clean-html-replace-html() :)
 (: keeleleek:clean-html-remove-div() :)
 (: keeleleek:clean-html-remove-ms1-spans() :)
+(:~ tagavara 1 :)
 (: keeleleek:move-word-final-consonants() :)
 (: keeleleek:move-superscript-numbers() :)
 (: keeleleek:mark-element-homonymy-number() :)
@@ -18,6 +20,7 @@ import module namespace keeleleek ="http://vadja.keeleleek.ee" at "eelexistamise
 (: keeleleek:mark-multi-senses() :)
 (: keeleleek:mark-placenames() :) (: jooksutada 2 korda! :)
 (: keeleleek:mark-author-names() :) (: jooksutada 2 korda! :)
+(:~ tagavara 2 :)
 (: keeleleek:mark-borrowing-language() :)
 (: keeleleek:mark-style() :)
 (: keeleleek:mark-üldviited() :)
