@@ -29,6 +29,6 @@ import module namespace keeleleek ="http://vadja.keeleleek.ee" at "eelexistamise
 (: keeleleek:headword-type() :)
 (: keeleleek:update-headword-collate-value() :)
 (:keeleleek:merge-pog-elements():)
-(: keeleleek:mark-mg-ki-elements() :)
+(: keeleleek:mark-mg-ki-elements() :) (: leiab ainult 20 sõnaartiklit! :)
 
 (: keeleleek:export-to-eelex() :)

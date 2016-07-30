@@ -537,6 +537,7 @@ for $vana-artikkel in db:open('vot')//vot:A[contains(., "■")]
     let $tekst-element := $artikkel//text()[contains(., "■")]
     let $tekst := tokenize($tekst-element, "\s*■\s*")
     let $siblings := $tekst-element/following-sibling::node()
+    (: stop on viimase üldviitegrupi index või viimane tipp :)
     let $stop :=
       if (count($siblings[node-name(.) = QName("http://www.eki.ee/dict/vot", "yvtg")]) > 0)
       then (functx:index-of-node($siblings, $siblings[node-name(.) = QName("http://www.eki.ee/dict/vot", "yvtg")][1]))
@@ -615,7 +616,6 @@ declare updating function keeleleek:headword-type() {
 };
 
 
-
 (:~ extracts the information that makes up the headword's collation value :)
 declare updating function keeleleek:update-headword-collate-value() {
   for $headword in db:open('vot')//vot:m
@@ -623,6 +623,7 @@ declare updating function keeleleek:update-headword-collate-value() {
       insert node attribute vot:O {normalize-space(replace($headword, "[^\p{L} ]", ""))}
       into $headword
 };
+
 
 (:~ merges two consecutive placenames and authornames into a single pog element :)
 declare (:updating:) function keeleleek:merge-pog-elements() {
@@ -647,12 +648,14 @@ declare (:updating:) function keeleleek:merge-pog-elements() {
 };
 
 
+(:~ kustuta hiljem ära -- leiab ainult 20 sõnaartiklit :)
 declare function keeleleek:mark-mg-ki-elements() {
   for $art in db:open('vot')//vot:A[exists(./vot:P/preceding-sibling::text())]
     return $art
 };
 
 
+(:~ normalizes all whitespace :)
 declare updating function keeleleek:fix-nbsp() {
   for $old-element-with-nbsp in db:open('vot')//text()[contains(., "&#160;")]/..
     return 
@@ -668,6 +671,7 @@ declare updating function keeleleek:fix-nbsp() {
 };
 
 
+(:~ removes all element names and attributes that does not belong to eelex :)
 declare updating function keeleleek:export-to-eelex() {
   for $wrong-ns in db:open('vot')//((* except vot:*)|(@* except (@vot:*|@xml:*)))
     return delete node $wrong-ns
