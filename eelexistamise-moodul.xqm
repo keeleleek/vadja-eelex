@@ -685,6 +685,7 @@ declare updating function keeleleek:export-to-eelex() {
       (: elemendid kustutakse ära jättes alles nende sisu :)
       then (
         let $parent := $wrong-ns-node/..
+        (: @todo insert whitespace before and after content :)
         return insert nodes $wrong-ns-node/node() after $parent/$wrong-ns-node,
         delete node $wrong-ns-node
       )
