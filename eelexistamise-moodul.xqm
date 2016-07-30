@@ -365,6 +365,52 @@ for $element in db:open('vot')//(* except vot:autor)/text()[matches(., $regexp)]
 };
 
 
+(:~ marks specially marked placename and author names :)
+declare updating function keeleleek:mark-special-place-author-names() {
+let $kohanimed := "(vdjL|Pi|Ke|Ki|Kõ|Ja|Po|Lu|Li|Ra|Mu|Sa|vdjI|Ii|Ko|Ma|Kl|Ku|Kr|K|R|U|L|P|M|V|J|I|S)"
+let $autorinimed := "(Ahl|Al|Ar|Bor|Eur|Gro|Kett|Len|Lön|Must|Mäg|Pal|Pal[.]?\s*[12]|Por|[Rr]eg|[Rr]eg[.]?\s*[12]|Ränk|Salm[.]?\s*[12]|Set|Sj|Tsv|Tum|Vilb)"
+(: ise leitud: K-Ahl.|J-Tsv.|J-Must.|Kõ-Len.|   (Ahl. 105)  :)
+let $regexp := concat(
+  "(^|\s|[.,;])([(]",
+  $kohanimed, "-", $autorinimed,
+  "[.]?[)]|", (: esimesed autorinimed on variant alg- ja lõppsuluga :)
+  $kohanimed, "-", $autorinimed, (: teine on lihtsalt autorinimi:)
+  "[.]?)(\s|$|[.,;])"
+)
+
+for $element in db:open('vot')//(* except vot:autor)/text()[matches(., $regexp)]/..
+  return 
+    replace node $element with
+    copy $new-element := $element
+    modify (
+      for $text-node in $new-element//text()[matches(., $regexp) and not(./parent::vot:autor)]
+      let $analysis := fn:analyze-string($text-node, $regexp)
+      return (
+        insert node (
+          for $part in $analysis/*
+            return
+              switch ($part/name())
+                case "fn:match" return 
+                  let $text := $part/fn:group[@nr=2]/string()
+                  return 
+                  ($part/fn:group[@nr=1]/text(),
+                    <vot:pog vot:teor="2">
+                      <vot:koht>{substring-before($text, "-")}</vot:koht>
+                      <vot:autor>{substring-after($text, "-")}</vot:autor>
+                    </vot:pog>,
+                    $part/fn:group[@nr=(max($part/fn:group/@nr))]/text()
+                  )
+                case "fn:non-match" return
+                  $part/text()
+                default return ()
+              ) before $text-node,
+              delete node $text-node
+        )
+    )
+    return $new-element
+};
+
+
 (:~ marks borrowing language :)
 declare updating function keeleleek:mark-borrowing-language() {
   let $kohanimed := "(\[\s*<\s*)((e|is|sm|vn)(,\s*(e|is|sm|vn))*)(\s*\?\s*\])"

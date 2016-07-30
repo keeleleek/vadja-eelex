@@ -18,6 +18,7 @@ import module namespace keeleleek ="http://vadja.keeleleek.ee" at "eelexistamise
 (: keeleleek:mark-element-homonymy-number() :)
 (: keeleleek:mark-headword-homonymy-number() :) (: seda ei ole enam vaja! :)
 (: keeleleek:mark-multi-senses() :)
+(: keeleleek:mark-special-place-author-names() :) (: jooksutada 2 korda! :)
 (: keeleleek:mark-placenames() :) (: jooksutada 2 korda! :)
 (: keeleleek:mark-author-names() :) (: jooksutada 2 korda! :)
 (:~ tagavara 2 :)
