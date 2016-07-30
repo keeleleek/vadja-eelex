@@ -72,7 +72,11 @@ declare updating function keeleleek:clean-html-delete-head() {
 declare updating function keeleleek:clean-html-rename-sr() {
   for $body in db:open('vot')//xhtml:body 
     return (
-      insert node attribute xml:lang {"vot"} into $body,
+      (: lisa keel või muuda olemasolev keel :)
+      if (exists($body/@xml:lang))
+      then (replace value of node $body/@xml:lang with "vot")
+      else (insert node attribute xml:lang {"vot"} into $body),
+      (: muuda html-body ümber sr elemendiks :)
       rename node $body as "vot:sr"
     )
 };
