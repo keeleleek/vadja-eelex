@@ -126,7 +126,7 @@ declare updating function keeleleek:move-superscript-numbers() {
 
 (: @todo: võiks teha sama mis eelmine, aga kooloniga ehk märksõna liigiga -- seda pole vaja! :)
 (:~ puts together superscript numbers with preceding words  :)
-declare updating function keeleleek:move-word-finals() {
+declare updating function keeleleek:move-word-final-consonants() {
   for $vana-artikkel in db:open('vot')//text()[matches(., "^(ᴢ|ʙ|ᴅ|ɢ)")]//ancestor::vot:A
   return
   replace node $vana-artikkel with

@@ -11,7 +11,7 @@ import module namespace keeleleek ="http://vadja.keeleleek.ee" at "eelexistamise
 (: keeleleek:clean-html-replace-html() :)
 (: keeleleek:clean-html-remove-div() :)
 (: keeleleek:clean-html-remove-ms1-spans() :)
-(: keeleleek:move-word-finals() :)
+(: keeleleek:move-word-final-consonants() :)
 (: keeleleek:move-superscript-numbers() :)
 (: keeleleek:mark-element-homonymy-number() :)
 (: keeleleek:mark-headword-homonymy-number() :) (: seda ei ole enam vaja! :)
