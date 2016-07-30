@@ -324,7 +324,7 @@ for $element in db:open('vot')//(* except vot:koht)/text()[matches(., $kohanimed
 (:~ marks author names :)
 declare updating function keeleleek:mark-author-names() {
   (: punkt võib esineda nime järel :)
-let $autorinimed := "(K-Ahl|Ahl|Al|Ar|Bor|Eur|Gro|Kett|Kõ-Len|Len|R-Lön|Lön|J-Must|Must|Mäg|Pal|Pal[.]?\s*[12]|Por|Reg|reg[.]?\s*[12]|Ränk|Salm[.]?\s*[12]|Set|K-Set|M-Set|Sj|J-Tsv|Tsv|Tum|Vilb|R-Reg)"
+let $autorinimed := "(Ahl|Al|Ar|Bor|Eur|Gro|Kett|Len|Lön|Must|Mäg|Pal|Pal[.]?\s*[12]|Por|[Rr]eg|[Rr]eg[.]?\s*[12]|Ränk|Salm[.]?\s*[12]|Set|Sj|Tsv|Tum|Vilb)"
 (: ise leitud: K-Ahl.|J-Tsv.|J-Must.|Kõ-Len.|   (Ahl. 105)  :)
 let $regexp := concat(
   "(^|\s|[.,;])([(]",
