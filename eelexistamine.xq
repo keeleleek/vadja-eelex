@@ -7,6 +7,8 @@ import module namespace keeleleek ="http://vadja.keeleleek.ee" at "eelexistamise
 (: keeleleek:mark-headwords() :)
 (: keeleleek:fix-missing-headword-articles() :)
 (: keeleleek:merge-successive-m-elements() :) (: jooksutada 2 korda! :)
+ keeleleek:mark-alternative-headwords() 
+(: keeleleek:mark-votic-example-texts() :)
 (: keeleleek:clean-html-delete-head() :)
 (: keeleleek:clean-html-rename-sr() :)
 (: keeleleek:clean-html-replace-html() :)

@@ -609,7 +609,7 @@ for $vana-artikkel in db:open('vot')//vot:A[contains(., "■")]
 };
 
 
-(:~ marks original texts :)
+(:~ marks original equivalents :)
 declare updating function keeleleek:mark-original() {
   let $regexp := "^(.*)\(orig[.]?:?\s*([^\)]*)\)(.*)$"
 
@@ -720,6 +720,26 @@ declare updating function keeleleek:fix-nbsp() {
       with normalize-space(replace($text, "&#160;", " "))
     )
     return $element-with-nbsp
+};
+
+
+(: marks the alternative headwords in P :)
+declare updating function keeleleek:mark-alternative-headwords() {
+  for $alt-hw in db:open("vot")//*:span[@class = "regular-italic" and exists(./ancestor::*:P)]
+    return (
+      rename node $alt-hw as "vot:m",
+      delete nodes $alt-hw/@*
+    )
+};
+
+
+(: marks the votic example texts in S :)
+declare updating function keeleleek:mark-votic-example-texts() {
+  for $example in db:open("vot")//*:span[@class = "regular-italic" and exists(./ancestor::*:S)]
+    return (
+      rename node $example as "vot:n",
+      delete nodes $example/@*
+    )
 };
 
 
