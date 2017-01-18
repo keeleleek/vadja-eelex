@@ -8,4 +8,4 @@ The transformation into EELex dictionary XML format (used by the Institute of Es
 
 All other files are deprecated and might be removed.
 
-The transformation sees the underlying XML as a functional data structure. This is illustrated shortly in the presentation [here](https://kitwiki.csc.fi/twiki/pub/FinCLARIN/KielipankkiEvent2016September/Kankainen_23092016.pdf), which was presented at the Seminar on Fenno-Ugric Computational Linguistics in Helsinki (2016).
+The transformation sees the underlying XML as a functional data structure. This way the data is transformed but nothing is deleted from it. From the programmer point of view, it is like moving around with a time machine. It is shortly illustrated in this [presentation here](https://kitwiki.csc.fi/twiki/pub/FinCLARIN/KielipankkiEvent2016September/Kankainen_23092016.pdf), which was presented at the Seminar on Fenno-Ugric Computational Linguistics in Helsinki (2016).
