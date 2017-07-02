@@ -65,12 +65,12 @@ declare updating function keeleleek:merge-successive-m-elements() {
 
 (:~ deletes the html head element from the dictionary xml :)
 declare updating function keeleleek:clean-html-delete-head() {
-  delete nodes db:open('vot')//xhtml:head
+  delete nodes db:open('vot')//*:head
 };
 
 (:~ renames the html body element as eelex sr :)
 declare updating function keeleleek:clean-html-rename-sr() {
-  for $body in db:open('vot')//xhtml:body 
+  for $body in db:open('vot')//*:body 
     return (
       (: lisa keel või muuda olemasolev keel :)
       if (exists($body/@xml:lang))
@@ -83,14 +83,14 @@ declare updating function keeleleek:clean-html-rename-sr() {
 
 (:~ removes the root html element from the dictionary :)
 declare updating function keeleleek:clean-html-replace-html() {
-  for $html-root in db:open('vot')/xhtml:html
+  for $html-root in db:open('vot')/*:html
     return replace node $html-root with $html-root//vot:sr
 };
 
 
 (:~ removes the html div elements from the dictionary xml :)
 declare updating function keeleleek:clean-html-remove-div() {
-  for $div in db:open('vot')//xhtml:div
+  for $div in db:open('vot')//*:div
     return replace node $div with $div/vot:A
 };
 
@@ -122,6 +122,52 @@ declare updating function keeleleek:move-superscript-numbers() {
       )
   )
   return $artikkel
+};
+
+(:~ märgendab kõik kursiivis teksti vadjakeelseks :)
+declare updating function keeleleek:märgenda-vadja-näitelaused() {
+  for $italic-text in db:open("vot")//*:span[@class="regular-italic"]
+  return
+  replace node $italic-text with
+  copy $text := $italic-text
+  modify (
+    (: lisa keel või muuda olemasolev keel :)
+      if (exists($text/@xml:lang))
+      then (replace value of node $text/@xml:lang with "vot")
+      else (insert node attribute xml:lang {"vot"} into $text),
+      (: nimeta 'span' ümber 'näitelause' elemendiks :)
+      rename node $text as "vot:näitelause"
+  )
+  return $text
+};
+
+(:~ lisa kürilitsale keel :)
+declare updating function keeleleek:lisa-vene-keele-märgend() {
+  let $kürilitsa := "([-]?(\p{IsCyrillic}|\p{IsCyrillicSupplement}|ï)(\p{IsCyrillic}|\p{IsCyrillicSupplement}|\p{IsCombiningDiacriticalMarks}|[ ï/,()]|&#45;|&#8211;)*)"
+
+for $element in db:open('vot')//vot:A//text()[matches(., $kürilitsa)]/..
+  return
+    replace node $element with
+    copy $new-element := $element
+    modify (
+      for $text-node in $new-element/text()[matches(., $kürilitsa)]
+      let $analysis := fn:analyze-string($text-node, $kürilitsa)
+      return (
+        insert node (
+          for $part in $analysis/*
+            return
+              switch ($part/name())
+                case "fn:match" return 
+                  (: @todo mis selle elemendi nimi peaks olema? :)
+                  (<vot:vene xml:lang="ru">{$part/fn:group/string()}</vot:vene>)
+                case "fn:non-match" return
+                  $part/text()
+                default return ()
+              ) before $text-node,
+              delete node $text-node
+        )
+    )
+    return $new-element
 };
 
 (: @todo: võiks teha sama mis eelmine, aga kooloniga ehk märksõna liigiga -- seda pole vaja! :)
@@ -556,7 +602,7 @@ declare updating function keeleleek:mark-viidemärksõna-viited() {
   replace node $vana-artikkel with
   copy $artikkel := $vana-artikkel
   modify (
-    for $viide in $artikkel//text()[matches(., "^vt[.]\s+ka$")]
+    for $viide in $artikkel//text()[matches(., "^\s*vt[.]\s+ka\s*$")] (: @TODO üks viide on sidekriipsuga '- vt. ka' :)
       let $m := $viide//parent::vot:A/vot:m/string()
       let $viiteelement := $viide/following::*[1]
       let $viitetekst := $viiteelement/string()
@@ -564,6 +610,7 @@ declare updating function keeleleek:mark-viidemärksõna-viited() {
       return
       if (exists($viiteelement))
       then (
+        (: kustuta ära tühikutega ümbritsetud tekst 'vt. ka' :)
         replace value of node $viide with replace($viide/string(), "\s*vt[.]\s+ka\s*", ""),
         replace node $viiteelement with <vot:mvtg>{
           for $viit in $viited
@@ -757,4 +804,67 @@ declare updating function keeleleek:export-to-eelex() {
       )
       (: atribuudid kustutakse ära koos nende sisuga :)
       else (delete node $wrong-ns-node)
+};
+
+
+(:~ 
+This function takes a list of database names and optionally a list of language codes.
+It creates separate full-text indexed databases for lemmatized searching of each language contained in the original database.
+If the list of language codes is empty, all existing values of xml:lang found in the database is used.
+The full-text databases are named 'dbname-ft-langcode' 
+Another function normalizes the texts, removes duplicate entries and inserts xml:id attributes
+:)
+declare updating function keeleleek:create-ft-indices-for-each-lang(
+  $db-names as xs:string*,
+  $lang-codes as xs:string*
+) {
+  for $db-name in $db-names
+    let $langs := if( not( empty( $lang-codes )))
+                         then( $lang-codes )
+                         else( distinct-values(db:open($db-name)//@xml:lang) )
+    for $lang in $langs
+      let $lang-group := db:open($db-name)//*[@xml:lang = $lang]
+      let $ft-db-name := concat($db-name, '-ft-', $lang)
+      
+      (: create full-text db for each language :)
+      return
+        db:create(
+          $ft-db-name,
+            <context xml:lang="{$lang}">{
+              for $text at $count-position in $lang-group
+                return <text-representation id="{concat($ft-db-name, "-",$count-position)}">{
+                            $text
+                          }</text-representation>
+            }</context>,
+          $ft-db-name,
+          map { 'ftindex': true(), 'language': $lang }
+      ) 
+};
+
+(:~
+Helper function for organizing the content of autogenerated full-text indices.
+* normalize texts (both unicode and whitespace)
+* remove duplicate entries
+* insert identifiers
+declare updating function keeleleek:reorganize-ft-indices() {
+  
+      let $lang-group-with-ids := 
+                            for $element at $count-number in $lang-group//*
+                              return
+                                copy $element-with-id := $element
+                                modify (
+                                  insert node attribute 
+                                      xml:id
+                                      {concat($ft-db-name, '-', $count-number)} 
+                                    into $element-with-id
+                                )
+                                return $element-with-id
+  
+};
+
+:)
+
+
+declare updating function keeleleek:remove-and-cleanup() {
+  (: html elements, xml:lang attributes, spans, etc :)
 };
