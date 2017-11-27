@@ -868,3 +868,12 @@ declare updating function keeleleek:reorganize-ft-indices() {
 declare updating function keeleleek:remove-and-cleanup() {
   (: html elements, xml:lang attributes, spans, etc :)
 };
+
+
+
+(:~ 
+ Return the names of elements in the votic namespace.
+ :)
+declare function keeleleek:show-vot-element-names() as xs:string* {
+  distinct-values(index:facets('vot')//*[starts-with(@name, 'vot')]/@name)
+};
