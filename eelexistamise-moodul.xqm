@@ -877,3 +877,12 @@ declare updating function keeleleek:remove-and-cleanup() {
 declare function keeleleek:show-vot-element-names() as xs:string* {
   distinct-values(index:facets('vot')//*[starts-with(@name, 'vot')]/@name)
 };
+
+
+
+(:~
+ Return the number of whitespace separated Votic tokens contained in the example sentences.
+ :)
+declare function keeleleek:votic-tokens-in-example-sentences() as xs:integer{
+  db:open("vot")//*:näitelause => distinct-values() => string-join(" ") => tokenize() => count()
+};
