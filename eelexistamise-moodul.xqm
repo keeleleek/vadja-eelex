@@ -9,10 +9,11 @@ declare namespace vot = "http://www.eki.ee/dict/vot";
 declare namespace xhtml = "http://www.w3.org/1999/xhtml";
 import module namespace functx = 'http://www.functx.com';
 
+declare variable $keeleleek:db-name := "voteelex";
 
 (:~ marks the elements holding headwords :)
 declare updating function keeleleek:mark-headwords() {
-  for $vana-rida in db:open('vot')//*:body/*:div/*:p
+  for $vana-rida in db:open($keeleleek:db-name)//*:body/*:div/*:p
   return
     replace node $vana-rida with 
     copy $rida := $vana-rida
@@ -33,7 +34,7 @@ declare updating function keeleleek:mark-headwords() {
 
 (:~ combine articles without headwords together with the previous headword article :)
 declare updating function keeleleek:fix-missing-headword-articles() {
-  for $katkinerida in db:open('vot')//vot:A[not(exists(.//vot:m))]
+  for $katkinerida in db:open($keeleleek:db-name)//vot:A[not(exists(.//vot:m))]
   let $õigerida := $katkinerida/preceding-sibling::vot:A[1]
   return (
       insert nodes $katkinerida/node()
@@ -45,7 +46,7 @@ declare updating function keeleleek:fix-missing-headword-articles() {
 (:~ merges two successive vot:m elements :)
 declare updating function keeleleek:merge-successive-m-elements() {
   (: kõik märksõnatekstid mis järgnevad märksõnatekstile pantakse kokku eelmise elemendi alla:)
-  for $vana-artikkel in db:open('vot')//vot:A[count(vot:P) > 1]
+  for $vana-artikkel in db:open($keeleleek:db-name)//vot:A[count(vot:P) > 1]
     return 
       replace node $vana-artikkel with
       copy $artikkel := $vana-artikkel
@@ -65,12 +66,12 @@ declare updating function keeleleek:merge-successive-m-elements() {
 
 (:~ deletes the html head element from the dictionary xml :)
 declare updating function keeleleek:clean-html-delete-head() {
-  delete nodes db:open('vot')//*:head
+  delete nodes db:open($keeleleek:db-name)//*:head
 };
 
 (:~ renames the html body element as eelex sr :)
 declare updating function keeleleek:clean-html-rename-sr() {
-  for $body in db:open('vot')//*:body 
+  for $body in db:open($keeleleek:db-name)//*:body 
     return (
       (: lisa keel või muuda olemasolev keel :)
       if (exists($body/@xml:lang))
@@ -83,27 +84,27 @@ declare updating function keeleleek:clean-html-rename-sr() {
 
 (:~ removes the root html element from the dictionary :)
 declare updating function keeleleek:clean-html-replace-html() {
-  for $html-root in db:open('vot')/*:html
+  for $html-root in db:open($keeleleek:db-name)/*:html
     return replace node $html-root with $html-root//vot:sr
 };
 
 
 (:~ removes the html div elements from the dictionary xml :)
 declare updating function keeleleek:clean-html-remove-div() {
-  for $div in db:open('vot')//*:div
+  for $div in db:open($keeleleek:db-name)//*:div
     return replace node $div with $div/vot:A
 };
 
 (:~ removes spans with class="ms1" from the dictionary xml :)
 declare updating function keeleleek:clean-html-remove-ms1-spans() {
-  delete nodes db:open('vot')//*:span[contains(@class, "ms1")]
+  delete nodes db:open($keeleleek:db-name)//*:span[contains(@class, "ms1")]
 };
 
 (: @todo hiljem võiks ka delete nodes xhtml:* :)
 
 (:~ puts together superscript numbers with preceding words  :)
 declare updating function keeleleek:move-superscript-numbers() {
-  for $vana-artikkel in db:open('vot')//text()[matches(., "^\s*(¹|²|³|\p{IsSuperscriptsandSubscripts})")]//ancestor::vot:A
+  for $vana-artikkel in db:open($keeleleek:db-name)//text()[matches(., "^\s*(¹|²|³|\p{IsSuperscriptsandSubscripts})")]//ancestor::vot:A
   return
   replace node $vana-artikkel with
   copy $artikkel := $vana-artikkel
@@ -145,7 +146,7 @@ declare updating function keeleleek:märgenda-vadja-näitelaused() {
 declare updating function keeleleek:lisa-vene-keele-märgend() {
   let $kürilitsa := "([-]?(\p{IsCyrillic}|\p{IsCyrillicSupplement}|ï)(\p{IsCyrillic}|\p{IsCyrillicSupplement}|\p{IsCombiningDiacriticalMarks}|[ ï/,()]|&#45;|&#8211;)*)"
 
-for $element in db:open('vot')//vot:A//text()[matches(., $kürilitsa)]/..
+for $element in db:open($keeleleek:db-name)//vot:A//text()[matches(., $kürilitsa)]/..
   return
     replace node $element with
     copy $new-element := $element
@@ -173,7 +174,7 @@ for $element in db:open('vot')//vot:A//text()[matches(., $kürilitsa)]/..
 (: @todo: võiks teha sama mis eelmine, aga kooloniga ehk märksõna liigiga -- seda pole vaja! :)
 (:~ puts together superscript numbers with preceding words  :)
 declare updating function keeleleek:move-word-final-consonants() {
-  for $vana-artikkel in db:open('vot')//text()[matches(., "^(ᴢ|ʙ|ᴅ|ɢ)")]//ancestor::vot:A
+  for $vana-artikkel in db:open($keeleleek:db-name)//text()[matches(., "^(ᴢ|ʙ|ᴅ|ɢ)")]//ancestor::vot:A
   return
   replace node $vana-artikkel with
   copy $artikkel := $vana-artikkel
@@ -196,7 +197,7 @@ declare updating function keeleleek:move-word-final-consonants() {
 
 (:~ moves the headword's homonymy number as an attribute :)
 declare updating function keeleleek:mark-headword-homonymy-number() {
-  for $vana-märksõna in db:open('vot')//vot:m[fn:matches(., "(¹|²|³|\p{IsSuperscriptsandSubscripts})\s*$")]
+  for $vana-märksõna in db:open($keeleleek:db-name)//vot:m[fn:matches(., "(¹|²|³|\p{IsSuperscriptsandSubscripts})\s*$")]
   return
   
   replace node $vana-märksõna with
@@ -221,7 +222,7 @@ declare updating function keeleleek:mark-headword-homonymy-number() {
 (:~ moves the homonymy number from the elements text into it's corresponding attribute :)
 (: @todo this should eradicate the need of the previous headword-homonymy-number function :)
 declare updating function keeleleek:mark-element-homonymy-number() {
-  for $old-element-with-homnum in db:open('vot')//(vot:m|vot:syn|vot:der|vot:mvt|vot:yvt)[matches(., "(¹|²|³|\p{IsSuperscriptsandSubscripts})(\s*$)")]
+  for $old-element-with-homnum in db:open($keeleleek:db-name)//(vot:m|vot:syn|vot:der|vot:mvt|vot:yvt)[matches(., "(¹|²|³|\p{IsSuperscriptsandSubscripts})(\s*$)")]
   return
     replace node $old-element-with-homnum with
     copy $element := $old-element-with-homnum
@@ -245,7 +246,7 @@ declare updating function keeleleek:mark-element-homonymy-number() {
 
 (:~ marks sense numbers :)
 declare updating function keeleleek:mark-multi-senses() {
-  for $vana-artikkel in db:open('vot')//vot:A[exists(.//*:span[contains(@class, "nr1")])]
+  for $vana-artikkel in db:open($keeleleek:db-name)//vot:A[exists(.//*:span[contains(@class, "nr1")])]
   let $nodes := $vana-artikkel/node()
   let $indices :=
     for $seq in (1 to count($nodes))
@@ -287,7 +288,7 @@ declare updating function keeleleek:mark-multi-senses() {
 
 (:~ marks the sense in mono-sensical item in articles where references exists :)
 declare updating function keeleleek:mark-single-senses() {
-  for $old-article in db:open('vot')//vot:A[exists(.//vot:mvt union .//vot:vvt) and not(exists(.//vot:S))]
+  for $old-article in db:open($keeleleek:db-name)//vot:A[exists(.//vot:mvt union .//vot:vvt) and not(exists(.//vot:S))]
     return 
     replace node $old-article with
     copy $art := $old-article
@@ -336,7 +337,7 @@ declare updating function keeleleek:mark-placenames() {
   let $kohanimed := "(^|\s|[.,;])([(](vdjL|Pi|Ke|Ki|Kõ|Ja|Po|Lu|Li|Ra|Mu|Sa|vdjI|Ii|Ko|Ma|Kl|Ku|Kr|K|R|U|L|P|M|V|J|I|S)[)]|(vdjL|Pi|Ke|Ki|Kõ|Ja|Po|Lu|Li|Ra|Mu|Sa|vdjI|Ii|Ko|Ma|Kl|Ku|Kr|K|R|U|L|P|M|V|J|I|S))(\s|$|[.,;])"
 
 
-for $element in db:open('vot')//(* except vot:koht)/text()[matches(., $kohanimed)]/..
+for $element in db:open($keeleleek:db-name)//(* except vot:koht)/text()[matches(., $kohanimed)]/..
   return 
     replace node $element with
     copy $new-element := $element
@@ -380,7 +381,7 @@ let $regexp := concat(
   "[.]?)(\s|$|[.,;])"
 )
 
-for $element in db:open('vot')//(* except vot:autor)/text()[matches(., $regexp)]/..
+for $element in db:open($keeleleek:db-name)//(* except vot:autor)/text()[matches(., $regexp)]/..
   return 
     replace node $element with
     copy $new-element := $element
@@ -424,7 +425,7 @@ let $regexp := concat(
   "[.]?)(\s|$|[.,;])"
 )
 
-for $element in db:open('vot')//(* except vot:autor)/text()[matches(., $regexp)]/..
+for $element in db:open($keeleleek:db-name)//(* except vot:autor)/text()[matches(., $regexp)]/..
   return 
     replace node $element with
     copy $new-element := $element
@@ -461,7 +462,7 @@ for $element in db:open('vot')//(* except vot:autor)/text()[matches(., $regexp)]
 declare updating function keeleleek:mark-borrowing-language() {
   let $kohanimed := "(\[\s*<\s*)((e|is|sm|vn)(,\s*(e|is|sm|vn))*)(\s*\?\s*\])"
 
-  for $element in db:open('vot')//(* except vot:lak)/text()[matches(., $kohanimed)]/..
+  for $element in db:open($keeleleek:db-name)//(* except vot:lak)/text()[matches(., $kohanimed)]/..
   return 
     replace node $element with
     copy $new-element := $element
@@ -498,7 +499,7 @@ declare updating function keeleleek:mark-borrowing-language() {
 declare updating function keeleleek:mark-style() {
   let $kohanimed := "(^|\s|[.,;])((kk|mõist|rl|vs)[.]?)(\s|$|[.,;])"
 
-  for $element in db:open('vot')//(* except vot:nli)/text()[matches(., $kohanimed)]/..
+  for $element in db:open($keeleleek:db-name)//(* except vot:nli)/text()[matches(., $kohanimed)]/..
   return 
     replace node $element with
     copy $new-element := $element
@@ -530,7 +531,7 @@ declare updating function keeleleek:mark-style() {
 
 (:~ marks üldviited :)
 declare updating function keeleleek:mark-üldviited() {
-  for $vana-artikkel in db:open('vot')//vot:A[matches(., "Vt[.]\s+ka")]
+  for $vana-artikkel in db:open($keeleleek:db-name)//vot:A[matches(., "Vt[.]\s+ka")]
   return
   replace node $vana-artikkel with
   copy $artikkel := $vana-artikkel
@@ -560,7 +561,7 @@ declare updating function keeleleek:mark-üldviited() {
 
 (:~ marks vasteviited :)
 declare updating function keeleleek:mark-vasteviited() {
-  for $vana-artikkel in db:open('vot')//vot:A[matches(., "←")]
+  for $vana-artikkel in db:open($keeleleek:db-name)//vot:A[matches(., "←")]
   return
   replace node $vana-artikkel with
   copy $artikkel := $vana-artikkel
@@ -597,7 +598,7 @@ declare updating function keeleleek:mark-vasteviited() {
 
 (:~ marks viidemärksõna viited :)
 declare updating function keeleleek:mark-viidemärksõna-viited() {
-  for $vana-artikkel in db:open('vot')//vot:A[matches(., "vt[.]\s+ka")]
+  for $vana-artikkel in db:open($keeleleek:db-name)//vot:A[matches(., "vt[.]\s+ka")]
   return
   replace node $vana-artikkel with
   copy $artikkel := $vana-artikkel
@@ -628,7 +629,7 @@ declare updating function keeleleek:mark-viidemärksõna-viited() {
 (:~ marks üldnäited NB! depends on mark-üldviited() :)
 declare updating function keeleleek:mark-üldnäited() {
   (: üldnäited esinevad vot:S elemendis pärast tähendusplokki tp ja enne üldviitegruppi yvt :)
-for $vana-artikkel in db:open('vot')//vot:A[contains(., "■")]
+for $vana-artikkel in db:open($keeleleek:db-name)//vot:A[contains(., "■")]
   return 
   replace node $vana-artikkel with
   copy $artikkel := $vana-artikkel
@@ -661,7 +662,7 @@ declare updating function keeleleek:mark-original() {
   let $regexp := "^(.*)\(orig[.]?:?\s*([^\)]*)\)(.*)$"
 
   (: ei leia juhud üles, kus sulgudevaheline tekst asub omaette eraldi elemendis :)
-  for $vana-text in db:open('vot')//(* except vot:xor)/text()[matches(., $regexp)]/..
+  for $vana-text in db:open($keeleleek:db-name)//(* except vot:xor)/text()[matches(., $regexp)]/..
   return
     replace node $vana-text with
     copy $text := $vana-text
@@ -691,7 +692,7 @@ declare updating function keeleleek:mark-original() {
 
 (:~ moves the type of the headword into an attribute of the vot:m element. :)
 declare updating function keeleleek:headword-type() {
-  for $old-typed-headword in db:open('vot')//vot:m[matches(., "^\s*~|:\s*$")]
+  for $old-typed-headword in db:open($keeleleek:db-name)//vot:m[matches(., "^\s*~|:\s*$")]
     return 
     replace node $old-typed-headword with
     copy $typed-headword := $old-typed-headword
@@ -717,7 +718,7 @@ declare updating function keeleleek:headword-type() {
 
 (:~ extracts the information that makes up the headword's collation value :)
 declare updating function keeleleek:update-headword-collate-value() {
-  for $headword in db:open('vot')//vot:m
+  for $headword in db:open($keeleleek:db-name)//vot:m
     return
       insert node attribute vot:O {normalize-space(replace($headword, "[^\p{L} ]", ""))}
       into $headword
@@ -727,7 +728,7 @@ declare updating function keeleleek:update-headword-collate-value() {
 (:~ merges two consecutive placenames and authornames into a single pog element :)
 declare (:updating:) function keeleleek:merge-pog-elements() {
   (: :)
-  for $vana-artikkel in db:open('vot')//vot:A[count(vot:pog) > 1]
+  for $vana-artikkel in db:open($keeleleek:db-name)//vot:A[count(vot:pog) > 1]
     return 
       (:replace node $vana-artikkel with:)
       copy $artikkel := $vana-artikkel
@@ -749,14 +750,14 @@ declare (:updating:) function keeleleek:merge-pog-elements() {
 
 (:~ kustuta hiljem ära -- leiab ainult 20 sõnaartiklit :)
 declare function keeleleek:mark-mg-ki-elements() {
-  for $art in db:open('vot')//vot:A[exists(./vot:P/preceding-sibling::text())]
+  for $art in db:open($keeleleek:db-name)//vot:A[exists(./vot:P/preceding-sibling::text())]
     return $art
 };
 
 
 (:~ normalizes all whitespace :)
 declare updating function keeleleek:fix-nbsp() {
-  for $old-element-with-nbsp in db:open('vot')//text()[contains(., "&#160;")]/..
+  for $old-element-with-nbsp in db:open($keeleleek:db-name)//text()[contains(., "&#160;")]/..
     return 
     replace node $old-element-with-nbsp with
     copy $element-with-nbsp := $old-element-with-nbsp
@@ -792,7 +793,7 @@ declare updating function keeleleek:mark-votic-example-texts() {
 
 (:~ removes all element names and attributes that does not belong to eelex :)
 declare updating function keeleleek:export-to-eelex() {
-  for $wrong-ns-node in db:open('vot')//((* except vot:*)|(@* except (@vot:*|@xml:*)))
+  for $wrong-ns-node in db:open($keeleleek:db-name)//((* except vot:*)|(@* except (@vot:*|@xml:*)))
     return
       if ($wrong-ns-node instance of element())
       (: elemendid kustutakse ära jättes alles nende sisu :)
