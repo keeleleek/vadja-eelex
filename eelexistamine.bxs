@@ -1,0 +1,72 @@
+# This script automatically retro-digitizes the Votic Dictionary
+# E.g it runs a bunch of XQuery functions against BaseX
+
+# import module namespace keeleleek="http://vadja.keeleleek.ee" at "eelexistamise-moodul.xqm";
+
+# (: eelexistab andmebaasi :)
+CREATE DB voteelex
+SET CHOP false
+SET AUTOOPTIMIZE true
+SET PARSER html
+#SET HTMLPARSER method=xml,nons=true,nocdata=true,nodefaults=true,nobogons=true,nocolons=true,ignorable=true
+SET CREATEFILTER *.html
+ADD ./sources/a-h.html
+ADD ./sources/i-l.html
+ADD ./sources/m-r.html
+ADD ./sources/s-y.html
+
+OPEN voteelex
+CREATE BACKUP voteelex
+
+XQUERY import module namespace keeleleek="http://vadja.keeleleek.ee" at "eelexistamise-moodul.xqm";       keeleleek:fix-nbsp()
+XQUERY import module namespace keeleleek="http://vadja.keeleleek.ee" at "eelexistamise-moodul.xqm";       keeleleek:mark-headwords()
+XQUERY import module namespace keeleleek="http://vadja.keeleleek.ee" at "eelexistamise-moodul.xqm";       keeleleek:fix-missing-headword-articles()
+# NB! 2 korda
+XQUERY import module namespace keeleleek="http://vadja.keeleleek.ee" at "eelexistamise-moodul.xqm";       keeleleek:merge-successive-m-elements()
+XQUERY import module namespace keeleleek="http://vadja.keeleleek.ee" at "eelexistamise-moodul.xqm";       keeleleek:merge-successive-m-elements()
+XQUERY import module namespace keeleleek="http://vadja.keeleleek.ee" at "eelexistamise-moodul.xqm";       keeleleek:mark-alternative-headwords()
+XQUERY import module namespace keeleleek="http://vadja.keeleleek.ee" at "eelexistamise-moodul.xqm";       keeleleek:mark-votic-example-texts()
+XQUERY import module namespace keeleleek="http://vadja.keeleleek.ee" at "eelexistamise-moodul.xqm";       keeleleek:clean-html-delete-head()
+XQUERY import module namespace keeleleek="http://vadja.keeleleek.ee" at "eelexistamise-moodul.xqm";       keeleleek:clean-html-rename-sr()
+XQUERY import module namespace keeleleek="http://vadja.keeleleek.ee" at "eelexistamise-moodul.xqm";       keeleleek:clean-html-replace-html()
+XQUERY import module namespace keeleleek="http://vadja.keeleleek.ee" at "eelexistamise-moodul.xqm";       keeleleek:clean-html-remove-div()
+XQUERY import module namespace keeleleek="http://vadja.keeleleek.ee" at "eelexistamise-moodul.xqm";       keeleleek:clean-html-remove-ms1-spans()
+
+CREATE BACKUP voteelex
+
+XQUERY import module namespace keeleleek="http://vadja.keeleleek.ee" at "eelexistamise-moodul.xqm";       keeleleek:move-word-final-consonants()
+XQUERY import module namespace keeleleek="http://vadja.keeleleek.ee" at "eelexistamise-moodul.xqm";       keeleleek:move-superscript-numbers()
+XQUERY import module namespace keeleleek="http://vadja.keeleleek.ee" at "eelexistamise-moodul.xqm";       keeleleek:mark-element-homonymy-number()
+XQUERY import module namespace keeleleek="http://vadja.keeleleek.ee" at "eelexistamise-moodul.xqm";       keeleleek:mark-multi-senses()
+# NB! 2 korda
+XQUERY import module namespace keeleleek="http://vadja.keeleleek.ee" at "eelexistamise-moodul.xqm";       keeleleek:mark-special-place-author-names()
+XQUERY import module namespace keeleleek="http://vadja.keeleleek.ee" at "eelexistamise-moodul.xqm";       keeleleek:mark-special-place-author-names()
+# NB! 2 korda
+XQUERY import module namespace keeleleek="http://vadja.keeleleek.ee" at "eelexistamise-moodul.xqm";       keeleleek:mark-placenames()
+XQUERY import module namespace keeleleek="http://vadja.keeleleek.ee" at "eelexistamise-moodul.xqm";       keeleleek:mark-placenames()
+# NB! 2 korda
+XQUERY import module namespace keeleleek="http://vadja.keeleleek.ee" at "eelexistamise-moodul.xqm";       keeleleek:mark-author-names()
+XQUERY import module namespace keeleleek="http://vadja.keeleleek.ee" at "eelexistamise-moodul.xqm";       keeleleek:mark-author-names()
+XQUERY import module namespace keeleleek="http://vadja.keeleleek.ee" at "eelexistamise-moodul.xqm";       keeleleek:märgenda-vadja-näitelaused()
+XQUERY import module namespace keeleleek="http://vadja.keeleleek.ee" at "eelexistamise-moodul.xqm";       keeleleek:lisa-vene-keele-märgend()
+XQUERY import module namespace keeleleek="http://vadja.keeleleek.ee" at "eelexistamise-moodul.xqm";       keeleleek:mark-borrowing-language()
+XQUERY import module namespace keeleleek="http://vadja.keeleleek.ee" at "eelexistamise-moodul.xqm";       keeleleek:mark-style()
+XQUERY import module namespace keeleleek="http://vadja.keeleleek.ee" at "eelexistamise-moodul.xqm";       keeleleek:mark-üldviited()
+XQUERY import module namespace keeleleek="http://vadja.keeleleek.ee" at "eelexistamise-moodul.xqm";       keeleleek:mark-vasteviited()
+XQUERY import module namespace keeleleek="http://vadja.keeleleek.ee" at "eelexistamise-moodul.xqm";       keeleleek:mark-viidemärksõna-viited()
+XQUERY import module namespace keeleleek="http://vadja.keeleleek.ee" at "eelexistamise-moodul.xqm";       keeleleek:mark-single-senses()
+# NB! eeldab üldviidete olemasolu
+XQUERY import module namespace keeleleek="http://vadja.keeleleek.ee" at "eelexistamise-moodul.xqm";       keeleleek:mark-üldnäited()
+XQUERY import module namespace keeleleek="http://vadja.keeleleek.ee" at "eelexistamise-moodul.xqm";       keeleleek:mark-original()
+XQUERY import module namespace keeleleek="http://vadja.keeleleek.ee" at "eelexistamise-moodul.xqm";       keeleleek:headword-type()
+# viidete homonüümianumbri märgendamine
+XQUERY import module namespace keeleleek="http://vadja.keeleleek.ee" at "eelexistamise-moodul.xqm";       keeleleek:mark-element-homonymy-number()
+XQUERY import module namespace keeleleek="http://vadja.keeleleek.ee" at "eelexistamise-moodul.xqm";       keeleleek:update-headword-collate-value()
+XQUERY import module namespace keeleleek="http://vadja.keeleleek.ee" at "eelexistamise-moodul.xqm";       keeleleek:merge-pog-elements()
+XQUERY import module namespace keeleleek="http://vadja.keeleleek.ee" at "eelexistamise-moodul.xqm";       keeleleek:mark-mg-ki-elements()
+
+CREATE BACKUP voteelex
+
+# keeleleek:create-ft-indices-for-each-lang(("vot"), ("ru")) :)
+# keeleleek:remove-and-cleanup()
+# keeleleek:export-to-eelex()
