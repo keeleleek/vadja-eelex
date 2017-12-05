@@ -900,8 +900,7 @@ declare function keeleleek:save-db-as-file(
 {
   let $params :=<output:serialization-parameters xmlns:output="http://www.w3.org/2010/xslt-xquery-serialization">
     <output:omit-xml-declaration value="yes"/>
-    <output:indent value="yes"/>
-    <output:suppress-indentation value="A"/>
+    <output:indent value="no"/>
   </output:serialization-parameters>
   
   return file:write($filename, db:open($db-name), $params)
