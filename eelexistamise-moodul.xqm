@@ -887,3 +887,22 @@ declare function keeleleek:show-vot-element-names() as xs:string* {
 declare function keeleleek:votic-tokens-in-example-sentences() as xs:integer{
   db:open("vot")//*:näitelause => distinct-values() => string-join(" ") => tokenize() => count()
 };
+
+
+
+(:~ 
+ Saves the database as a serialized xml.
+ :)
+declare function keeleleek:save-db-as-file(
+  $db-name as xs:string,
+  $filename as xs:string
+)
+{
+  let $params :=<output:serialization-parameters xmlns:output="http://www.w3.org/2010/xslt-xquery-serialization">
+    <output:omit-xml-declaration value="yes"/>
+    <output:indent value="yes"/>
+    <output:suppress-indentation value="A"/>
+  </output:serialization-parameters>
+  
+  return file:write($filename, db:open($db-name), $params)
+};
