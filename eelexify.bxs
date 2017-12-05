@@ -66,6 +66,7 @@ XQUERY import module namespace keeleleek="http://vadja.keeleleek.ee" at "eelexif
 
 CREATE BACKUP voteelex
 
+XQUERY import module namespace keeleleek="http://vadja.keeleleek.ee" at "eelexify-module.xqm";       keeleleek:save-db-as-file("voteelex", "voteelex.xml")
 
 
 # keeleleek:create-ft-indices-for-each-lang(("vot"), ("ru")) :)
