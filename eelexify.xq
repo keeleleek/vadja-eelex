@@ -1,4 +1,4 @@
-import module namespace keeleleek ="http://vadja.keeleleek.ee" at "eelexistamise-moodul.xqm";
+import module namespace keeleleek ="http://vadja.keeleleek.ee" at "eelexify-module.xqm";
 
 (: eelexistab andmebaasi :)
 
