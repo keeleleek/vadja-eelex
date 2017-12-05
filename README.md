@@ -17,3 +17,8 @@ The software (e.g the XQuery functions) are provided under the GNU GPLv3 license
 ## Running the EELexifying script
 
 You need BaseX and the functx repository to run the EELexifying script. The script ``eelexistamine.bxs`` is a simple BaseX specific script that automates the creation of the database and initializes it with the original print files (as html) and runs all the updating transformations of the database in-place. Some backup points are also created by the script.
+
+Run the script with
+```shell
+basex -z -c eelexistamine.bxs
+```
