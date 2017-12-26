@@ -31,6 +31,8 @@ XQUERY import module namespace keeleleek="http://vadja.keeleleek.ee" at "eelexif
 XQUERY import module namespace keeleleek="http://vadja.keeleleek.ee" at "eelexify-module.xqm";       keeleleek:clean-html-remove-div()
 XQUERY import module namespace keeleleek="http://vadja.keeleleek.ee" at "eelexify-module.xqm";       keeleleek:clean-html-remove-ms1-spans()
 XQUERY import module namespace keeleleek="http://vadja.keeleleek.ee" at "eelexify-module.xqm";       keeleleek:mark-print-bind-names()
+XQUERY import module namespace keeleleek="http://vadja.keeleleek.ee" at "eelexify-module.xqm";       keeleleek:create-common-sr()
+XQUERY import module namespace keeleleek="http://vadja.keeleleek.ee" at "eelexify-module.xqm";       keeleleek:move-all-entries-to-common-sr()
 
 CREATE BACKUP voteelex
 

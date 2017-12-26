@@ -110,6 +110,32 @@ declare updating function keeleleek:mark-print-bind-names() {
         insert node attribute vot:KF {$name} into $entry
 };
 
+(:~ create db path for common sr :)
+declare updating function keeleleek:create-common-sr() {
+  let $doc := <vot:sr xml:lang="vot"></vot:sr>
+  return
+    db:add($keeleleek:db-name, $doc, $keeleleek:db-name)
+};
+
+(:~ koonda kõik artiklid ühise sr-elemendi alla :)
+declare updating function keeleleek:move-all-entries-to-common-sr() {
+  (: move all entries to the common resource :)
+  for $name in db:list($keeleleek:db-name)
+  where $name != $keeleleek:db-name
+  order by $name
+    for $entry in db:open($keeleleek:db-name, $name)/vot:sr/vot:A
+      return
+      (
+        insert node $entry
+          into db:open($keeleleek:db-name, $keeleleek:db-name)/vot:sr,
+        delete node $entry
+      ),
+  (: delete the old resources :)
+  for $name in db:list($keeleleek:db-name)
+  where $name != $keeleleek:db-name
+    return db:delete($keeleleek:db-name, $name)
+};
+
 (:~ puts together superscript numbers with preceding words  :)
 declare updating function keeleleek:move-superscript-numbers() {
   for $vana-artikkel in db:open($keeleleek:db-name)//text()[matches(., "^\s*(¹|²|³|\p{IsSuperscriptsandSubscripts})")]//ancestor::vot:A
