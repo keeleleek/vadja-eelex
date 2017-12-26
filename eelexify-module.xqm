@@ -245,14 +245,14 @@ declare updating function keeleleek:mark-element-homonymy-number() {
 
 
 (:~ marks sense numbers :)
-declare updating function keeleleek:mark-multi-senses() {
+declare (:updating:) function keeleleek:mark-multi-senses() {
   for $vana-artikkel in db:open($keeleleek:db-name)//vot:A[exists(.//*:span[contains(@class, "nr1")])]
   let $nodes := $vana-artikkel/node()
   let $indices :=
     for $seq in (1 to count($nodes))
       return $seq[$nodes[$seq][contains(@class, "nr1")]]
   return
-    replace node $vana-artikkel with
+    (:replace node $vana-artikkel with:)
     copy $artikkel := $vana-artikkel
     modify (
       (: tükelda indeksite kohalt:)
