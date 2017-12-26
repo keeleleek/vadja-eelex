@@ -245,19 +245,27 @@ declare updating function keeleleek:mark-element-homonymy-number() {
 
 
 (:~ marks sense numbers :)
-declare (:updating:) function keeleleek:mark-multi-senses() {
+declare updating function keeleleek:mark-multi-senses() {
   for $vana-artikkel in db:open($keeleleek:db-name)//vot:A[exists(.//*:span[contains(@class, "nr1")])]
   let $nodes := $vana-artikkel/node()
   let $indices :=
     for $seq in (1 to count($nodes))
       return $seq[$nodes[$seq][contains(@class, "nr1")]]
   return
-    (:replace node $vana-artikkel with:)
+    replace node $vana-artikkel with
     copy $artikkel := $vana-artikkel
     modify (
       (: tükelda indeksite kohalt:)
       (: kuni esimeseni on Päis :)
-      insert node <vot:P>{$nodes[position() < min($indices)]}</vot:P>
+      insert node 
+        <vot:P>
+          {
+          for $node in $nodes[position() < min($indices)]
+            return if (local-name($node)="P")
+                   then ($node/child::*)
+                   else ($node)
+          }
+        </vot:P>
         as last into $artikkel,
       (: järgmised on Sisu tähendusnumbriga plokid :)
       (
@@ -279,8 +287,7 @@ declare (:updating:) function keeleleek:mark-multi-senses() {
           as last into $artikkel)
       ),
       (: kustutame kõik vanad elemendid :)
-      delete nodes $artikkel/(node() except (vot:P|vot:S))
-      
+      delete nodes $artikkel/node()[position() <= count($nodes)] 
     )
     return $artikkel
 };
