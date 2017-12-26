@@ -102,6 +102,14 @@ declare updating function keeleleek:clean-html-remove-ms1-spans() {
 
 (: @todo hiljem võiks ka delete nodes xhtml:* :)
 
+(:~ märgenda artiklid köitefaili kuuluvusega :)
+declare updating function keeleleek:mark-print-bind-names() {
+  for $name in db:list($keeleleek:db-name) order by $name
+    for $entry in db:open($keeleleek:db-name, $name)/vot:sr/vot:A
+      return
+        insert node attribute vot:KF {$name} into $entry
+};
+
 (:~ puts together superscript numbers with preceding words  :)
 declare updating function keeleleek:move-superscript-numbers() {
   for $vana-artikkel in db:open($keeleleek:db-name)//text()[matches(., "^\s*(¹|²|³|\p{IsSuperscriptsandSubscripts})")]//ancestor::vot:A
