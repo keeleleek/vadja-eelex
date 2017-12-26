@@ -257,7 +257,15 @@ declare updating function keeleleek:mark-multi-senses() {
     modify (
       (: tükelda indeksite kohalt:)
       (: kuni esimeseni on Päis :)
-      insert node <vot:P>{$nodes[position() < min($indices)]}</vot:P>
+      insert node 
+        <vot:P>
+          {
+          for $node in $nodes[position() < min($indices)]
+            return if (local-name($node)="P")
+                   then ($node/child::*)
+                   else ($node)
+          }
+        </vot:P>
         as last into $artikkel,
       (: järgmised on Sisu tähendusnumbriga plokid :)
       (
@@ -279,8 +287,7 @@ declare updating function keeleleek:mark-multi-senses() {
           as last into $artikkel)
       ),
       (: kustutame kõik vanad elemendid :)
-      delete nodes $artikkel/(node() except (vot:P|vot:S))
-      
+      delete nodes $artikkel/node()[position() <= count($nodes)] 
     )
     return $artikkel
 };
