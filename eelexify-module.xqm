@@ -161,7 +161,7 @@ declare updating function keeleleek:move-superscript-numbers() {
 
 (:~ märgendab kõik kursiivis teksti vadjakeelseks :)
 declare updating function keeleleek:märgenda-vadja-näitelaused() {
-  for $italic-text in db:open("vot")//*:span[@class="regular-italic"]
+  for $italic-text in db:open($keeleleek:db-name)//*:span[@class="regular-italic"]
   return
   replace node $italic-text with
   copy $text := $italic-text
@@ -814,7 +814,7 @@ declare updating function keeleleek:fix-nbsp() {
 
 (: marks the alternative headwords in P :)
 declare updating function keeleleek:mark-alternative-headwords() {
-  for $alt-hw in db:open("vot")//*:span[@class = "regular-italic" and exists(./ancestor::*:P)]
+  for $alt-hw in db:open($keeleleek:db-name)//*:span[@class = "regular-italic" and exists(./ancestor::*:P)]
     return (
       rename node $alt-hw as "vot:m",
       delete nodes $alt-hw/@*
@@ -824,7 +824,7 @@ declare updating function keeleleek:mark-alternative-headwords() {
 
 (: marks the votic example texts in S :)
 declare updating function keeleleek:mark-votic-example-texts() {
-  for $example in db:open("vot")//*:span[@class = "regular-italic" and exists(./ancestor::*:S)]
+  for $example in db:open($keeleleek:db-name)//*:span[@class = "regular-italic" and exists(./ancestor::*:S)]
     return (
       rename node $example as "vot:n",
       delete nodes $example/@*
@@ -917,7 +917,7 @@ declare updating function keeleleek:remove-and-cleanup() {
  Return the names of elements in the votic namespace.
  :)
 declare function keeleleek:show-vot-element-names() as xs:string* {
-  distinct-values(index:facets('vot')//*[starts-with(@name, 'vot')]/@name)
+  distinct-values(index:facets($keeleleek:db-name)//*[starts-with(@name, 'vot')]/@name)
 };
 
 
@@ -926,7 +926,7 @@ declare function keeleleek:show-vot-element-names() as xs:string* {
  Return the number of whitespace separated Votic tokens contained in the example sentences.
  :)
 declare function keeleleek:votic-tokens-in-example-sentences() as xs:integer{
-  db:open("vot")//*:näitelause => distinct-values() => string-join(" ") => tokenize() => count()
+  db:open($keeleleek:db-name)//*:näitelause => distinct-values() => string-join(" ") => tokenize() => count()
 };
 
 
