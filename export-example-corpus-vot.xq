@@ -19,25 +19,26 @@ declare function local:export-to-giellatekno-vrt($nodes as node()*)
     case (element(w))
     return
       concat(
+        out:nl(),
         (: 1) token :)
         $node/text(),
         (: 2) lemma+morphemes :)
         if (exists($node/@lemma)) then (out:tab() || $node/@lemma) else (),
         if (exists($node/@pos)) then (" //_" || $node/@pos || "_ ") else (),
-        if (exists($node/@analysis)) then ($node/@analysis || ", //") else (),
-        out:nl()
+        if (exists($node/@analysis)) then ($node/@analysis || ", //") else ()
       )
       
     case (element(*))
     return
       (
+        out:nl(), (: add a newline :)
         element {name($node)} {(
           $node/@*, (: pass through all attributes :)
-          out:nl(), (: add a newline :)
+          
           for $child in $node/node()
             return local:export-to-giellatekno-vrt($child)
-        )},
-      out:nl()
+          ,out:nl()
+        )}
     )
     
     default
