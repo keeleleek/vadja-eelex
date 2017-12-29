@@ -181,9 +181,10 @@ declare updating function keeleleek:merge-continuous-italic-elements() {
   )
 };
 
-(:~ märgendab kõik kursiivis teksti vadjakeelseks :)
+(:~ märgendab kõik kursiivis teksti mis sisaldab rohkem kui üks sõne vadjakeelseks näitelauseks :)
 declare updating function keeleleek:märgenda-vadja-näitelaused() {
   for $italic-text in db:open($keeleleek:db-name)//*:span[@class="regular-italic"]
+  [count(tokenize(normalize-space(.))) > 1]
   return
   replace node $italic-text with
   copy $text := $italic-text
