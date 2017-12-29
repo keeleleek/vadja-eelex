@@ -163,7 +163,7 @@ declare updating function keeleleek:move-superscript-numbers() {
     elementides, mis tegelikult kuuluvad kokku, liidame need ühte :)
 declare updating function keeleleek:merge-continuous-italic-elements() {
   (: @todo: esineb ka <span>:</span>  :)
-  for $last-of-contiguous in db:open("voteelex")//*:span
+  for $last-of-contiguous in db:open($keeleleek:db-name)//*:span
           [@class="regular-italic" and not(matches(.,"^\s*$")) (: and  @xml:lang="et-EE" :)
              and
            exists((./preceding-sibling::node())[last()]/self::*:span
