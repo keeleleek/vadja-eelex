@@ -159,6 +159,28 @@ declare updating function keeleleek:move-superscript-numbers() {
   return $artikkel
 };
 
+(:~ näitelaused ja muu tekst on katkine -- kursiivis tekst võib olla eraldi 
+    elementides, mis tegelikult kuuluvad kokku, liidame need ühte :)
+declare updating function keeleleek:merge-continuous-italic-elements() {
+  (: @todo: esineb ka <span>:</span>  :)
+  for $last-of-contiguous in db:open("voteelex")//*:span
+          [@class="regular-italic" and not(matches(.,"^\s*$")) (: and  @xml:lang="et-EE" :)
+             and
+           exists((./preceding-sibling::node())[last()]/self::*:span
+           [@class="regular-italic" and not(matches(.,"^\s*$")) (:and @xml:lang="et-EE":)])
+             and
+           not(exists((./following-sibling::node())[1]/self::*:span
+           [@class="regular-italic" and not(matches(.,"^\s*$")) (:and @xml:lang="et-EE":)]))
+          ]
+  let $preceding := ($last-of-contiguous/preceding-sibling::*)[last()]
+  return (
+    insert node $last-of-contiguous/text() as last into $preceding,
+    if (exists($last-of-contiguous/(node() except text())))
+    then (delete node $last-of-contiguous/text()) (: @todo need to delete empty spans? :)
+    else (delete node $last-of-contiguous)
+  )
+};
+
 (:~ märgendab kõik kursiivis teksti vadjakeelseks :)
 declare updating function keeleleek:märgenda-vadja-näitelaused() {
   for $italic-text in db:open($keeleleek:db-name)//*:span[@class="regular-italic"]
