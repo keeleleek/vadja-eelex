@@ -50,6 +50,7 @@ XQUERY import module namespace keeleleek="http://vadja.keeleleek.ee" at "eelexif
 # NB! 2 korda
 XQUERY import module namespace keeleleek="http://vadja.keeleleek.ee" at "eelexify-module.xqm";       keeleleek:mark-author-names()
 XQUERY import module namespace keeleleek="http://vadja.keeleleek.ee" at "eelexify-module.xqm";       keeleleek:mark-author-names()
+XQUERY import module namespace keeleleek="http://vadja.keeleleek.ee" at "eelexify-module.xqm";       keeleleek:merge-two-part-examples()
 # NB! 8 korda
 XQUERY import module namespace keeleleek="http://vadja.keeleleek.ee" at "eelexify-module.xqm";       keeleleek:merge-continuous-italic-elements()
 XQUERY import module namespace keeleleek="http://vadja.keeleleek.ee" at "eelexify-module.xqm";       keeleleek:merge-continuous-italic-elements()

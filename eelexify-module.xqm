@@ -163,6 +163,36 @@ declare updating function keeleleek:move-superscript-numbers() {
   return $artikkel
 };
 
+(: näitelaused võivad olla semikooloni kohal eraldatud eri jooksudesse :)
+declare updating function keeleleek:merge-two-part-examples() {
+  for $interrupt in db:open($keeleleek:db-name)//*:span[
+            matches(., "^\s*:\s*$")
+          and
+            exists((./preceding-sibling::node())[last()]
+                /self::*:span
+                [@class="regular-italic" and not(contains(.,"-"))]
+             )
+          and
+            exists((./following-sibling::node())[1]
+                /self::*:span
+                [@class="regular-italic" and not(contains(.,"-"))]
+             )
+          ]
+  let $preceding := ($interrupt/preceding-sibling::node())[last()]
+        /self::*:span
+        [@class="regular-italic"]
+  let $following := ($interrupt/following-sibling::node())[1]
+        /self::*:span
+        [@class="regular-italic"]
+  return
+    (
+      insert node $interrupt/text() as last into $preceding,
+      insert node $following/text() as last into $preceding,
+      delete node $interrupt,
+      delete node $following
+    )
+};
+
 (:~ näitelaused ja muu tekst on katkine -- kursiivis tekst võib olla eraldi 
     elementides, mis tegelikult kuuluvad kokku, liidame need ühte :)
 declare updating function keeleleek:merge-continuous-italic-elements() {
