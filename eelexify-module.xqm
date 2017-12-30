@@ -31,6 +31,10 @@ declare updating function keeleleek:mark-headwords() {
         return $rida
 };
 
+(:~ delete all empty spans :)
+declare updating function keeleleek:delete-empty-spans() {
+  delete nodes db:open($keeleleek:db-name)//*:span[.="" and not(./*)]
+};
 
 (:~ combine articles without headwords together with the previous headword article :)
 declare updating function keeleleek:fix-missing-headword-articles() {

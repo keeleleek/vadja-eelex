@@ -17,6 +17,7 @@ ADD ./sources/s-y.html
 OPEN voteelex
 CREATE BACKUP voteelex
 
+XQUERY import module namespace keeleleek="http://vadja.keeleleek.ee" at "eelexify-module.xqm";       keeleleek:delete-empty-spans()
 XQUERY import module namespace keeleleek="http://vadja.keeleleek.ee" at "eelexify-module.xqm";       keeleleek:fix-nbsp()
 XQUERY import module namespace keeleleek="http://vadja.keeleleek.ee" at "eelexify-module.xqm";       keeleleek:mark-headwords()
 XQUERY import module namespace keeleleek="http://vadja.keeleleek.ee" at "eelexify-module.xqm";       keeleleek:fix-missing-headword-articles()
