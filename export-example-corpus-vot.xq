@@ -48,10 +48,10 @@ declare function local:export-to-giellatekno-vrt($nodes as node()*)
 
 
 let $corpus := 
-<corpus title="Vadja keele sõnaraamat">
+<corpus title="Vadja keele sõnaraamat (2013)">
   <text title="Vadja näitelaused">
   {
-  for $example in db:open($keeleleek:db-name)//vot:näitelause/text()
+  for $example in distinct-values(db:open($keeleleek:db-name)//vot:näitelause/text())
     let $tokens := analyze-string(
                         normalize-space($example),
                         '(\.\.\.)|\s|[.,…?!:;]'
